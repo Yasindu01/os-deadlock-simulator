@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Result — Banker's Algorithm</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="container">
+
+    <header>
+        <h1>Banker's Algorithm — Result</h1>
+        <p>{{ n_processes }} processes &middot; {{ n_resources }} resource types</p>
+    </header>
+
+    <!-- ── Safe / Unsafe banner ────────────────────────────────── -->
+    {% if is_safe %}
+    <div class="result-banner safe">
+        STATE IS SAFE
+        <div class="sub">
+            Safe sequence: {{ safe_sequence | join(' → ') }}
+        </div>
+    </div>
+    {% else %}
+    <div class="result-banner unsafe">
+        STATE IS UNSAFE
+        <div class="sub">No safe sequence exists — deadlock risk</div>
+    </div>
+    {% endif %}
+
+    <!-- ── Metrics ─────────────────────────────────────────────── -->
+    <div class="card">
+        <h2>Algorithm Metrics</h2>
+        <div class="metrics-strip">
+            <div class="metric-box">
+                <div class="value">{{ metrics.comparisons }}</div>
+                <div class="label">Comparisons</div>
+            </div>
+            <div class="metric-box">
+                <div class="value">{{ metrics.iterations }}</div>
+                <div class="label">Iterations</div>
+            </div>
+            <div class="metric-box">
+                <div class="value">{{ elapsed_ms }} ms</div>
+                <div class="label">Execution Time</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Need Matrix ─────────────────────────────────────────── -->
+    <div class="card">
+        <h2>Need Matrix <span style="font-weight:400;color:var(--text-muted);font-size:0.85rem">(Max − Allocation)</span></h2>
+        <table class="matrix-table">
+            <tr>
+                <th></th>
+                {% for j in range(n_resources) %}
+                <th>R{{ j }}</th>
+                {% endfor %}
+            </tr>
+            {% for i in range(n_processes) %}
+            <tr>
+                <th>P{{ i }}</th>
+                {% for j in range(n_resources) %}
+                <td>{{ need[i][j] }}</td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <!-- ── Input Echo ──────────────────────────────────────────── -->
+    <div class="card">
+        <h2>Input Summary</h2>
+        <p style="margin-bottom:0.75rem"><strong>Available:</strong>
+            <code>{{ available | join('  ') }}</code>
+        </p>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+            <div>
+                <strong style="font-size:0.85rem">Max Demand</strong>
+                <table class="matrix-table">
+                    <tr>
+                        <th></th>
+                        {% for j in range(n_resources) %}<th>R{{ j }}</th>{% endfor %}
+                    </tr>
+                    {% for i in range(n_processes) %}
+                    <tr>
+                        <th>P{{ i }}</th>
+                        {% for j in range(n_resources) %}<td>{{ max_demand[i][j] }}</td>{% endfor %}
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+            <div>
+                <strong style="font-size:0.85rem">Allocation</strong>
+                <table class="matrix-table">
+                    <tr>
+                        <th></th>
+                        {% for j in range(n_resources) %}<th>R{{ j }}</th>{% endfor %}
+                    </tr>
+                    {% for i in range(n_processes) %}
+                    <tr>
+                        <th>P{{ i }}</th>
+                        {% for j in range(n_resources) %}<td>{{ allocation[i][j] }}</td>{% endfor %}
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Charts ──────────────────────────────────────────────── -->
+    <div class="card">
+        <h2>Visualizations</h2>
+        <div class="chart-grid">
+            <img src="data:image/png;base64,{{ need_chart }}" alt="Need Chart">
+            <img src="data:image/png;base64,{{ alloc_chart }}" alt="Allocation Chart">
+        </div>
+    </div>
+
+    <a href="/" class="back-link">&larr; Run another check</a>
+
+</div>
+</body>
+</html>

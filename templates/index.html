@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Banker's Algorithm — Deadlock Avoidance Simulator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="container">
+
+    <header>
+        <h1>Banker's Algorithm Simulator</h1>
+        <p>Deadlock Avoidance in Multiprogramming Operating Systems</p>
+    </header>
+
+    {% if error %}
+    <div class="error-box">
+        <strong>Input Error:</strong> {{ error }}
+    </div>
+    {% endif %}
+
+    <form method="POST" action="/result">
+
+        <div class="card">
+            <h2>System Configuration</h2>
+
+            <!-- Available -->
+            <div class="form-group">
+                <label>
+                    Available Resources
+                    <span class="hint">— space-separated integers, e.g. <code>3 3 2</code></span>
+                </label>
+                <input type="text"
+                       name="available"
+                       placeholder="3 3 2"
+                       required
+                       oninput="formatAvailable(this)">
+            </div>
+
+            <!-- Allocation FIRST -->
+            <div class="form-group">
+                <label>
+                    Current Allocation Matrix
+                    <span class="hint">— one row per process, values space-separated</span>
+                </label>
+                <textarea name="allocation"
+                          rows="5"
+                          placeholder="0 1 0&#10;2 0 0&#10;3 0 2&#10;2 1 1&#10;0 0 2"
+                          required
+                          oninput="formatMatrix(this)"></textarea>
+            </div>
+
+            <!-- Max SECOND -->
+            <div class="form-group">
+                <label>
+                    Maximum Demand Matrix
+                    <span class="hint">— one row per process, values space-separated</span>
+                </label>
+                <textarea name="max_demand"
+                          rows="5"
+                          placeholder="7 5 3&#10;3 2 2&#10;9 0 2&#10;2 2 2&#10;4 3 3"
+                          required
+                          oninput="formatMatrix(this)"></textarea>
+            </div>
+
+        </div>
+
+        <button type="submit" class="btn">Run Safety Check</button>
+
+    </form>
+</div>
+
+<script>
+function formatAvailable(input) {
+    let value = input.value.replace(/[^0-9]/g, '');
+    input.value = value.split('').join(' ');
+}
+
+function formatMatrix(textarea) {
+    let lines = textarea.value.split('\n');
+    let formattedLines = lines.map(line => {
+        let value = line.replace(/[^0-9]/g, '');
+        return value.split('').join(' ');
+    });
+    textarea.value = formattedLines.join('\n');
+}
+</script>
+
+</body>
+</html>
